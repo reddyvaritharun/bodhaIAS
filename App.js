@@ -6,6 +6,18 @@ import { NavigationContainer } from '@react-navigation/native';
 import 'react-native-gesture-handler';
 import { createStackNavigator } from '@react-navigation/stack';
 import { openBrowserAsync } from 'expo-web-browser';
+import  axios from "axios"; 
+let subject=""
+let result1 =  axios.get(`http://106.221.183.72:8080/api/Subjectdetails/get${subject}`).then(response => {
+    result1 = response.data;
+    console.log(result1)
+    console.log(response)
+   // Log the response data (array of addDepartment objects)
+  })
+  .catch(error => {
+    // Handle error
+    console.error('Error fetching data:', error);
+  });
 
 //home page screen
 function HomeScreen({ navigation }) {
@@ -201,10 +213,16 @@ function McqQuestions({ navigation }) {
 }
 // TR questions screen this page is in body 
 function TRQuestions({ navigation }) {
+    const departmentsArray = [];
+    const imagearray= [];
+    for(let i = 0;i<result1.length;i++){
+        departmentsArray.push(result1[i].Name)
+        imagearray.push(result1[i].Logo)
+      }
     return (
         <View style={styles.mcq}>
         <View style={styles.header}>
-    
+        
         <TouchableOpacity onPress={() => navigation.goBack()}>
             <Image style={styles.homei} source={require('./assets/home.png')} />
             </TouchableOpacity>
@@ -213,33 +231,20 @@ function TRQuestions({ navigation }) {
             <View style={styles.cvr}>
         
             <View style={styles.cv}>
-            <TouchableOpacity onPress={() => navigation.navigate('C language')}>
-             <Text>c language</Text>
-                </TouchableOpacity>
+            <TouchableOpacity onPress={() => navigation.navigate('Name')}>
+            {imagearray.map((Logo,index)=>(
+          <View key={index}>
+            <Image source={{uri:Logo}} style={{height:'100px',width:'100px'}} ></Image>
+          </View>
+          ))}
+            {departmentsArray.map((Name, index) => (
+            <View key={index} >
+            <Text style={styles.depar}>{Name}</Text>
             </View>
-            
-            <View style={styles.cv}>
-            <TouchableOpacity onPress={() => navigation.navigate('C++ language')}>
-                <Text>c++</Text>
-                </TouchableOpacity>
+        ))}
+  
+            </TouchableOpacity>
             </View>
-            </View>
-            <View style={styles.cvrm}>
-            <View style={styles.cvm}>
-            <TouchableOpacity onPress={() => navigation.navigate('Python')}>
-                <Text>python</Text>
-                </TouchableOpacity>
-            </View>
-            <View style={styles.cvm}>
-            <TouchableOpacity onPress={() => navigation.navigate('java')}>
-                <Text>java</Text>
-                </TouchableOpacity>
-            </View>
-            <View style={styles.cvm}>
-            <TouchableOpacity onPress={() => navigation.navigate('sql')}>
-                <Text>sql</Text>
-                </TouchableOpacity>
-                </View>
             </View>
             <View style={styles.footerst}>
         <Text style={styles.fotextt}>FAQ's</Text>
@@ -672,7 +677,8 @@ cv:{
      height:100,
      width:100,
      backgroundColor:"skyblue",
-     borderRadius:15
+     borderRadius:15,
+     flexDirection:"column",
  },
 cvm:{
     alignItems:"center",
